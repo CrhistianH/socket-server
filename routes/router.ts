@@ -1,5 +1,6 @@
 
 import { Router, Request, Response } from 'express';
+import Server from '../classes/server';
 
 const ROUTER = Router();
 
@@ -13,29 +14,45 @@ ROUTER.get('/mensajes', (req: Request, res: Response) => {
 
 ROUTER.post('/mensajes', (req: Request, res: Response) => {
 
-    const CUERPO = req.body.cuerpo;
-    const DE = req.body.de;
+    const cuerpo = req.body.cuerpo;
+    const de = req.body.de;
+    const sala = req.body.sala;
 
+    const server = Server.instance;
+    const payload = {
+        cuerpo,
+        de
+    }
+
+    server.io.emit('mensaje-nuevo', payload);
     
     res.json({
         ok: true,
-        CUERPO,
-        DE
+        cuerpo,
+        de
     });
 });
 
 ROUTER.post('/mensajes/:id', (req: Request, res: Response) => {
 
-    const CUERPO = req.body.cuerpo;
-    const DE = req.body.de;
-    const ID = req.params.id;
+    const cuerpo = req.body.cuerpo;
+    const de = req.body.de;
+    const id = req.params.id;
 
+    const server = Server.instance;
+
+    const payload = {
+        de,
+        cuerpo
+    }
+
+    server.io.in(id).emit('mensaje-privado', payload);
     
     res.json({
         ok: true,
-        CUERPO,
-        DE,
-        ID
+        cuerpo,
+        de,
+        id
     });
 });
 
